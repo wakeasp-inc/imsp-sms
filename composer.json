@@ -1,5 +1,5 @@
 {
-    "name": "wakeasp-inc/emome-imsp-sms-client",
+    "name": "wakeasp-inc/sms-client",
     "type": "library",
     "description": "The Symfony PHP framework",
     "license": "MIT",
