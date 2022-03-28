@@ -1,0 +1,22 @@
+{
+    "name": "wakeasp-inc/emome-imsp-sms-client",
+    "type": "library",
+    "description": "The Symfony PHP framework",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Kevin Huang",
+            "email": "kevin.huang@wakeasp.com.tw"
+        }
+    ],
+    "require": {
+        "php": ">=7.2.0",
+        "symfony/dotenv": "^5.4",
+        "symfony/http-client": "^5.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Emome\\": "src/Emome/"
+        }
+    }
+}
