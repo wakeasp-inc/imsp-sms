@@ -26,12 +26,16 @@ class SMSClient
      * @param string $password
      * @return void
      */
-    public function __construct(string $account, string $password)
+    public function __construct(string $account, string $password,$host=null)
     {
         $this->client = HttpClient::create();
 
         $this->account = $account;
         $this->password = $password;
+
+        if ($host){
+            $this->host = $host;
+        }
 
         $this->params = array(
             "account"         => $account,
