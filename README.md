@@ -9,5 +9,7 @@ use Emome\SMSClient;
 
 $client = new SMSClient("Account","Password");
 
-$re = $client->send("Message","Phone number");
+$response = $client->send("Message","Phone");
+
+$responseArr = $client->parseResponse($response->getContent());
 ```

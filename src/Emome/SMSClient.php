@@ -2,8 +2,10 @@
 
 namespace Emome;
 
+use http\Client\Response;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
+use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class SMSClient
 {
@@ -24,12 +26,16 @@ class SMSClient
      * @param string $password
      * @return void
      */
-    public function __construct(string $account, string $password)
+    public function __construct(string $account, string $password,$host=null)
     {
         $this->client = HttpClient::create();
 
         $this->account = $account;
         $this->password = $password;
+
+        if ($host){
+            $this->host = $host;
+        }
 
         $this->params = array(
             "account"         => $account,
@@ -48,7 +54,7 @@ class SMSClient
         );
     }
 
-    public function send(string $message, $phoneNumber,$params = array()): array
+    public function send(string $message, $phoneNumber,$params = array()): ResponseInterface
     {
         $params = array_merge($this->params, $params);
 
@@ -56,22 +62,20 @@ class SMSClient
         $params["dest_port"] = $this->getDestPortByType($params["dest_port"], $params["msg_type"]);
         $params["to_addr"] = $this->implodeAddresses($phoneNumber);
 
-        $response = $this->sendRequest($this->host."/SubmitSM",$params);
-
-        return $this->parseResponse($response->getContent());
+        return $this->sendRequest($this->host."/SubmitSM",$params);
     }
 
-    private function parseResponse($response): array
+    public function parseResponse($responseContent): array
     {
-        $response = preg_replace('/<[a-zA-Z\/][^>]*>/', '', $response);
-        $response = preg_replace('/[\r\n]*/', '', $response);
-        $x = explode('|', $response);
+        $responseContent = preg_replace('/<[a-zA-Z\/][^>]*>/', '', $responseContent);
+        $responseContent = preg_replace('/[\r\n]*/', '', $responseContent);
+        $arr = explode('|', $responseContent);
 
         return array(
-            'to_addr' => $x[0],
-            'code' => intval($x[1]),
-            'message_id' => $x[2],
-            'description' => $x[3]
+            'to_addr' => $arr[0],
+            'code' => intval($arr[1]),
+            'message_id' => $arr[2],
+            'description' => $arr[3]
         );
     }
 
@@ -121,9 +125,8 @@ class SMSClient
      * @return void
      * @throws TransportExceptionInterface
      */
-    private function sendRequest(string $url , $params)
+    private function sendRequest(string $url , $params):ResponseInterface
     {
-        var_dump($params);
         return $this->client->request('POST',$url , [
             'query' => $params
         ]);
