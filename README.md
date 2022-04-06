@@ -1,6 +1,6 @@
 # Wakeasp SMS Client 
 
-## 中華電信Emome API 
+## 中華電信Emome 簡訊API Client 
 
 Example
 
