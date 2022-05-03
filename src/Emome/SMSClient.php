@@ -4,7 +4,9 @@ namespace Emome;
 
 use http\Client\Response;
 use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\Notifier\Exception\LogicException;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class SMSClient
@@ -24,11 +26,23 @@ class SMSClient
      *
      * @param string $account
      * @param string $password
-     * @return void
+     * @param null $host
+     * @param HttpClientInterface|null $client
      */
-    public function __construct(string $account, string $password,$host=null)
-    {
-        $this->client = HttpClient::create();
+    public function __construct(
+        string $account,
+        string $password,
+        HttpClientInterface $client=null,
+        string $host=null,
+    ){
+        $this->client = $client;
+        if (null === $client) {
+            if (!class_exists(HttpClient::class)) {
+                throw new LogicException(sprintf('You cannot use "%s" as the HttpClient component is not installed. Try running "composer require symfony/http-client".', __CLASS__));
+            }
+
+            $this->client = HttpClient::create();
+        }
 
         $this->account = $account;
         $this->password = $password;
